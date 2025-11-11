@@ -122,3 +122,53 @@
             background-color: #333; 
             color: white; /* Cor do texto no dashboard */
         }
+          /* Estilos específicos para a área de Gestão de Estoque */
+        .search-area {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        .search-area input {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #4a4a4a;
+            color: white;
+            width: 300px;
+        }
+        .search-area button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #d8c8c8;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Tabela de Estoque */
+        .stock-table th, .stock-table td {
+            text-align: left;
+            vertical-align: middle;
+        }
+        .stock-table th {
+            background-color: #555;
+            color: #d8c8c8;
+        }
+        .stock-table td {
+            /* Mantém a cor do background do dashboard, ajustando para a tabela */
+            background-color: #3f3f3f; 
+            color: white;
+        }
+        
+        /* Destaque para baixo estoque (será aplicado via PHP ou JavaScript futuramente) */
+        .low-stock {
+            background-color: #f8d7da !important; /* Fundo vermelho claro */
+            color: #721c24 !important; /* Texto vermelho escuro */
+            font-weight: bold;
+        }
+        
+        .stock-status-cell {
+            font-weight: bold;
+        }

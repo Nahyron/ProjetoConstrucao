@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constru Casa - Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="_css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
@@ -28,10 +28,10 @@
             <nav class="sidebar">
                 <ul>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/cadastroProduto/"><i class="bi bi-tools"></i> Cadastro de produtos</a>
+                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/cadastroProduto/"><i class="bi bi-tools"></i> Tabela de Cadastro</a>
                     </li>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/entradaSaida/"><i class="bi bi-boxes"></i> entrada e saída dos produtos</a>
+                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/entradaSaida/"><i class="bi bi-boxes"></i>Tabela de Entrada e Saida</a>
                     </li>
                     <li class="menu-item">
                         <a href="http://localhost/aula_PHP/ProjetoConstrucao/gestaoEstoque/"><i class="bi bi-cart-plus"></i> gestão de estoque</a>
@@ -40,13 +40,13 @@
             </nav>
 
             <section class="content-area">
-                <h1>Bem-vindo ao Sistema de Gestão da Constru Casa!</h1>
+                <h1>Bem-vindo a gestão de Tabelas!</h1>
                 <p>Use o menu lateral para navegar pelas funcionalidades do sistema.</p>
                  <main class="main-content">
             <nav class="sidebar_menu-table">
                 <ul>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/Tabelas/"><i class="bi bi-table"></i>  Tabelas</a>
+                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/cadastroProduto/"><i class="bi bi-table"></i>  Tabelas</a>
                     </li>
             </section>
         </main>
@@ -62,7 +62,7 @@
                 userGreetingElement.textContent = `olá ${userName}`;
             } else {
                 // ✅ CAMINHO DE REDIRECIONAMENTO CORRIGIDO: sobe um nível e acessa pagina_login
-                window.location.href = '../pagina_login/index.php';
+                window.location.href = '../paginaInicial/index.php';
             }
         }
         
@@ -72,7 +72,7 @@
         logoutBtn.addEventListener('click', function() {
             localStorage.removeItem('userName');
             // ✅ CAMINHO DE REDIRECIONAMENTO CORRIGIDO
-            window.location.href = '../pagina_login/index.php';
+            window.location.href = '../paginaInicial/index.php';
         });
     </script>
 </body>

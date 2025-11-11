@@ -1,12 +1,3 @@
-<?php
-// A base PHP para a lógica de back-end fica aqui.
-// Esta seção será usada mais tarde para buscar e exibir os dados do banco.
-
-// include_once '../conexao.php'; 
-// $produtos = []; // Array que conteria os dados buscados
-// ... lógica para buscar produtos e quantidade de estoque ...
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -55,22 +46,19 @@
             color: #d8c8c8;
         }
         .stock-table td {
-            /* Mantém a cor do background do dashboard, ajustando para a tabela */
             background-color: #3f3f3f; 
             color: white;
         }
         
-        /* Destaque para baixo estoque (será aplicado via PHP ou JavaScript futuramente) */
         .low-stock {
-            background-color: #f8d7da !important; /* Fundo vermelho claro */
-            color: #721c24 !important; /* Texto vermelho escuro */
+            background-color: #da190b !important; /* Vermelho escuro para destaque de estoque */
+            color: white !important; 
             font-weight: bold;
         }
         
         .stock-status-cell {
             font-weight: bold;
         }
-
     </style>
 </head> 
  
@@ -102,13 +90,19 @@
                     <li class="menu-item">
                         <a href="../entradaSaida/index.php"><i class="bi bi-boxes"></i> entrada e saída dos produtos</a>
                     </li>
-                   
+                    <li class="menu-item">
+                        <a href="#"><i class="bi bi-cart-plus"></i> gestão de estoque</a>
+                    </li>
                 </ul>
             </nav>
 
             <section class="content-area">
                 <h1 style="color: white; margin-bottom: 20px;">Relatório de Estoque Atual</h1>
                 
+                <?php if (!empty($mensagem_erro)): ?>
+                    <div class="alert alert-danger" role="alert"><?= $mensagem_erro ?></div>
+                <?php endif; ?>
+
                 <div class="search-area">
                     <input type="text" placeholder="Pesquisar por Código, Produto ou Cor...">
                     <button><i class="bi bi-search"></i> Pesquisar</button>
@@ -121,37 +115,55 @@
                             <th>Produto</th>
                             <th>Cor / Textura</th>
                             <th>Peso/Litro</th>
-                            <th>Estoque Atual</th>
+                            <th>Estoque Atual (Simulado)</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Tinta Acrílica Premium</td>
-                            <td>Branco Neve / Liso</td>
-                            <td>18 Litros</td>
-                            <td class="stock-status-cell">45</td>
-                            <td><span class="badge bg-success">Em Estoque</span></td>
-                            <td><button class="btn btn-sm btn-info"><i class="bi bi-pencil"></i> Editar</button></td>
-                        </tr>
-                        <tr class="low-stock-row">
-                            <td>2</td>
-                            <td>Argamassa AC-III</td>
-                            <td>Cinza / Granulada</td>
-                            <td>20 Kg</td>
-                            <td class="stock-status-cell low-stock">8</td>
-                            <td><span class="badge bg-danger">Baixo Estoque</span></td>
-                            <td><button class="btn btn-sm btn-info"><i class="bi bi-pencil"></i> Editar</button></td>
-                        </tr>
-                        
-                        </tbody>
+                        <?php if (empty($produtos)): ?>
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">Nenhum produto cadastrado no momento.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($produtos as $produto): 
+                                // Simulação de estoque e status para fins de layout
+                                $estoque_simulado = rand(5, 150); // Valor aleatório
+                                $is_low_stock = $estoque_simulado < 15;
+                                $status_badge = $is_low_stock ? '<span class="badge bg-danger">Baixo Estoque</span>' : '<span class="badge bg-success">Em Estoque</span>';
+                                $row_class = $is_low_stock ? 'low-stock-row' : '';
+                            ?>
+                                <tr class="<?= $row_class ?>">
+                                    <td><?= htmlspecialchars($produto['id']) ?></td>
+                                    <td><?= htmlspecialchars($produto['produto']) ?></td>
+                                    <td><?= htmlspecialchars($produto['cor']) ?> / <?= htmlspecialchars($produto['textura']) ?></td>
+                                    <td><?= htmlspecialchars($produto['peso_litro']) ?></td>
+                                    <td class="stock-status-cell <?= $is_low_stock ? 'low-stock' : '' ?>"><?= $estoque_simulado ?></td>
+                                    <td><?= $status_badge ?></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Ações
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="editar_produto.php?id=<?= $produto['id'] ?>">Editar</a></li>
+                                                <li><a class="dropdown-item" href="../entradaSaida/index.php?codigo=<?= $produto['id'] ?>">Movimentar Estoque</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="deletar_produto.php?id=<?= $produto['id'] ?>">Excluir</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
                 </table>
                 
             </section>
         </main>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-YIeQ4o8qX1n7wA1z32X4gVjKkR4W3eE4p9z0P1r2v5u7L6gP8z9C3b2D9b4c5D6" crossorigin="anonymous"></script>
 
     <script>
         const logoutBtn = document.getElementById('logoutBtn');
