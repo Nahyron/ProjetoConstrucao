@@ -79,35 +79,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "<script>alert('As senhas não coincidem. Por favor, tente novamente.');</script>";
         exit;
     }
-    try {
-        // CORREÇÃO 1: A query deve ter APENAS interrogações (?), sem aspas e sem variáveis.
-        $sql = "INSERT INTO saep_db2.usuarios (nome_usuario, usuario, senha) 
-                VALUES (?, ?, ?)"; 
 
-        $stmt = $pdo->prepare($sql);
+    // AVISO: VULNERÁVEL A SQL INJECTION (Solicitado pelo usuário para fins didáticos)
+    $sql = "INSERT INTO usuarios (nome_usuario, usuario, senha) 
+            VALUES ('$nome_usuario', '$usuario', '$senha')"; 
 
-        // CORREÇÃO 2: Removemos todos os 'bindParam'. Não precisa deles aqui.
-
-        // CORREÇÃO 3: Passamos as variáveis corretas no execute.
-        // Atenção: Troquei '$email' (que não existia) por '$usuario'.
-        $executou = $stmt->execute([
-            $nome_usuario,          // Substitui a 1ª interrogação
-            $usuario,               // Substitui a 2ª interrogação
-            $senha    // Substitui a 3ª interrogação
-        ]);
-
-        if ($executou) {
-            echo "<script>
-                    alert('✅ Usuário cadastrado com sucesso!');
-                    window.location.href = '../paginaInicial/index.php';
-                  </script>";
-            exit; 
-        } else {
-            echo "<script>alert('❌ Falha ao cadastrar. Não foi possível inserir no banco.');</script>";
-        }
-
-    } catch (\PDOException $e) {
-        echo "<script>alert('🚫 Erro de sistema: " . $e->getMessage() . "');</script>";
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>
+                alert('✅ Usuário cadastrado com sucesso!');
+                window.location.href = '../paginaInicial/index.php';
+              </script>";
+        exit; 
+    } else {
+        echo "<script>alert('❌ Falha ao cadastrar: " . mysqli_error($conn) . "');</script>";
     }
 }
 ?>

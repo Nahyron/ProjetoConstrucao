@@ -12,6 +12,50 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Garante que o header alinhe as coisas para a direita */
+        .user-area {
+            display: flex;
+            flex-direction: row; /* Alinha lado a lado */
+            align-items: center;  /* Centraliza verticalmente */
+            justify-content: flex-end;
+            gap: 15px; /* Espaço entre os elementos */
+        }
+
+        /* Linha superior (Olá usuário + Porta de sair) */
+        .user-top-row {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espaço entre o nome e a porta */
+            font-size: 1.2rem;
+        }
+
+        /* Estilo do novo botão Cinza */
+        .btn-cadastro-usuario {
+            background-color: #e0e0e0; /* Cinza claro */
+            color: #333;
+            text-decoration: none;
+            padding: 5px 15px;
+            border-radius: 20px; /* Borda redonda estilo "Pílula" */
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Espaço entre texto e ícone */
+            transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-cadastro-usuario:hover {
+            background-color: #c0c0c0; /* Cinza mais escuro ao passar mouse */
+            color: #000;
+        }
+        
+        /* Ajuste do ícone dentro do botão */
+        .btn-cadastro-usuario i {
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
     
@@ -19,13 +63,27 @@
         <header class="header">
             <div class="logo-area">
                 <div class="dashboard-logo">
-                    <img src="../imagens/logo_casa.png" alt="Logo Constru Casa">
+                    <a href="index.php">
+                        <img src="../imagens/logo_casa.png" alt="Logo Constru Casa">
+                    </a>
                 </div>
                 <span class="company-name">Constru Casa</span>
             </div>
+            
             <div class="user-area">
-                <span class="user-greeting" id="userGreeting"> <?php echo "Olá, " . $_SESSION["nome_usuario"];?></span>
-              <i class="bi bi-door-open-fill" id="logoutBtn"></i> 
+                
+                <a href="../pagina_cadastro/" class="btn-cadastro-usuario">
+                    Cadastro usuário 
+                    <i class="bi bi-person-circle"></i>
+                </a>
+
+                <div class="user-top-row">
+                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION["nome_usuario"];?></span>
+                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor: pointer;" title="Sair"></i> 
+                    <a href="../Tabelas/tabela.php" style="text-decoration: none; color: inherit; margin-left: 10px; display: flex; align-items: center; gap: 5px;">
+                        <i class="bi bi-table"></i> Ir para Área de Tabelas
+                    </a>
+                </div>
             </div>
         </header>
 
@@ -33,26 +91,50 @@
             <nav class="sidebar">
                 <ul>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/cadastroProduto/"><i class="bi bi-tools"></i> Cadastro de produtos</a>
+                        <a href="./index.php"><i class="bi bi-house-door"></i> Início</a>
                     </li>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/entradaSaida/"><i class="bi bi-boxes"></i> entrada e saída dos produtos</a>
+                        <a href="../cadastroProduto/"><i class="bi bi-tools"></i> Cadastro de produtos</a>
                     </li>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/gestaoEstoque/"><i class="bi bi-cart-plus"></i> gestão de estoque</a>
+                        <a href="../cadastroFornecedor/"><i class="bi bi-truck"></i> Cadastro de fornecedores</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="../entradaSaida/"><i class="bi bi-arrow-left-right"></i> Entrada e Saída</a>
                     </li>
                 </ul>
             </nav>
 
             <section class="content-area">
-                <h1>Bem-vindo ao Sistema de Gestão da Constru Casa!</h1>
-                <p>Use o menu lateral para navegar pelas funcionalidades do sistema.</p>
-                 <main class="main-content">
-            <nav class="sidebar_menu-table">
-                <ul>
-                    <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/Tabelas/tabela.php"><i class="bi bi-table"></i>  Tabelas</a>
-                    </li>
+                <h1>Bem-vindo ao Sistema Constru Casa</h1>
+                <p>Selecione uma opção no menu lateral para começar.</p>
+                
+                <div style="display: flex; gap: 20px; margin-top: 30px;">
+                    <div class="card text-bg-dark mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Produtos</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Gerenciar Produtos</h5>
+                            <p class="card-text">Cadastre novos produtos no sistema.</p>
+                            <a href="../cadastroProduto/" class="btn btn-light">Acessar</a>
+                        </div>
+                    </div>
+                    <div class="card text-bg-dark mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Fornecedores</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Gerenciar Fornecedores</h5>
+                            <p class="card-text">Cadastre e visualize fornecedores.</p>
+                            <a href="../cadastroFornecedor/" class="btn btn-light">Acessar</a>
+                        </div>
+                    </div>
+                    <div class="card text-bg-dark mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Movimentação</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Entrada e Saída</h5>
+                            <p class="card-text">Registre entradas e saídas de estoque.</p>
+                            <a href="../entradaSaida/" class="btn btn-light">Acessar</a>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
     </div>  
@@ -60,25 +142,10 @@
  <script>
         // 1. Seleciona os elementos do HTML
         const logoutBtn = document.getElementById('logoutBtn');
-        const userGreetingElement = document.getElementById('userGreeting');
-
-        // 2. DEFINE a função (Cria a receita)
-        function loadUserName() {
-            const userName = localStorage.getItem('userName');
-            
-            if (userName) {
-                userGreetingElement.textContent = `olá ${userName}`;
-            } 
-            // OBS: Tirei o 'else' com redirecionamento para parar de recarregar a página sozinha
-        }
-        
-        // 3. EXECUTA a função
-        loadUserName(); 
 
         // 4. Configura o botão de "Sair/Voltar"
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                // Certifique-se que esse arquivo '../tabela.php' existe mesmo nesse local
                 window.location.href = '../pagina_login/index.php'; 
             });
         }

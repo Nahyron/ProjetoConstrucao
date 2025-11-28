@@ -1,6 +1,18 @@
 <?php
     session_start();
     require_once("../conexao/conexao.php");
+
+    // Lógica para buscar produtos
+    $produtos = [];
+    if ($conn) {
+        $sql = "SELECT * FROM cadastro_produto"; 
+        $result = mysqli_query($conn, $sql);
+        if ($result) {
+            while($row = mysqli_fetch_assoc($result)) {
+                $produtos[] = $row;
+            }
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -55,14 +67,47 @@
             color: white;
         }
         
-        .low-stock {
-            background-color: #da190b !important; /* Vermelho escuro para destaque de estoque */
-            color: white !important; 
+        /* Garante que o header alinhe as coisas para a direita */
+        .user-area {
+            display: flex;
+            flex-direction: row; /* Alinha lado a lado */
+            align-items: center;  /* Centraliza verticalmente */
+            justify-content: flex-end;
+            gap: 15px; /* Espaço entre os elementos */
+        }
+
+        /* Linha superior (Olá usuário + Porta de sair) */
+        .user-top-row {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espaço entre o nome e a porta */
+            font-size: 1.2rem;
+        }
+
+        /* Estilo do novo botão Cinza */
+        .btn-cadastro-usuario {
+            background-color: #e0e0e0; /* Cinza claro */
+            color: #333;
+            text-decoration: none;
+            padding: 5px 15px;
+            border-radius: 20px; /* Borda redonda estilo "Pílula" */
+            font-size: 0.9rem;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Espaço entre texto e ícone */
+            transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-cadastro-usuario:hover {
+            background-color: #c0c0c0; /* Cinza mais escuro ao passar mouse */
+            color: #000;
         }
         
-        .stock-status-cell {
-            font-weight: bold;
+        /* Ajuste do ícone dentro do botão */
+        .btn-cadastro-usuario i {
+            font-size: 1.2rem;
         }
     </style>
 </head> 
@@ -73,13 +118,24 @@
         <header class="header">
             <div class="logo-area">
                 <div class="dashboard-logo">
-                    <img src="../imagens/logo_casa.png" alt="Logo Constru Casa">
+                    <a href="../paginaInicial/index.php">
+                        <img src="../imagens/logo_casa.png" alt="Logo Constru Casa">
+                    </a>
                 </div>
                 <span class="company-name">Constru Casa</span>
             </div>
+            
             <div class="user-area">
-                <span class="user-greeting" id="userGreeting">olá usuário</span>
-               <i class="bi bi-door-open-fill" id="logoutBtn"></i> 
+                
+                <a href="../pagina_cadastro/" class="btn-cadastro-usuario">
+                    Cadastro usuário 
+                    <i class="bi bi-person-circle"></i>
+                </a>
+
+                <div class="user-top-row">
+                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION['nome_usuario']; ?></span>
+                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor:pointer;" title="Sair do sistema"></i> 
+                </div>
             </div>
         </header>
 
@@ -87,109 +143,76 @@
             <nav class="sidebar">
                 <ul>
                     <li class="menu-item">
-                        <a href="../paginainicial/index.php"><i class=" bi bi-house-door"></i> Pagina Inicial</a>
+                        <a href="../paginaInicial/index.php"><i class="bi bi-house-door"></i> Voltar ao Início</a>
                     </li>
                     <li class="menu-item">
-                        <a href="../cadastroProduto/index.php"><i class="bi bi-person-fill"></i> Cadastro de Produtos</a>
+                        <a href="../cadastroProduto/"><i class="bi bi-tools"></i> Cadastro de produtos</a>
                     </li>
                     <li class="menu-item">
-                        <a href="../entradaSaida/index.php"><i class="bi bi-boxes"></i> entrada e saída dos produtos</a>
+                        <a href="../cadastroFornecedor/"><i class="bi bi-truck"></i> Cadastro de fornecedores</a>
                     </li>
-                 
+                    <li class="menu-item">
+                        <a href="../entradaSaida/"><i class="bi bi-arrow-left-right"></i> Entrada e Saída</a>
+                    </li>
                 </ul>
             </nav>
 
             <section class="content-area">
-                <h1 style="color: white; margin-bottom: 20px;">Relatório de Estoque Atual</h1>
-                
-                <?php if (!empty($mensagem_erro)): ?>
-                    <div class="alert alert-danger" role="alert"><?= $mensagem_erro ?></div>
-                <?php endif; ?>
+                <h1 style="color: white; margin-bottom: 20px;">Gestão de Estoque</h1>
 
                 <div class="search-area">
-                    <input type="text" placeholder="Pesquisar por Código, Produto ou Cor...">
-                    <button><i class="bi bi-search"></i> Pesquisar</button>
+                    <input type="text" placeholder="Buscar produto...">
+                    <button>Buscar</button>
                 </div>
-                
+
                 <table class="table table-hover stock-table">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Produto</th>
-                            <th>Cor / Textura</th>
-                            <th>Peso/Litro</th>
-                            <th>Estoque Atual (Simulado)</th>
-                            <th>Status</th>
+                            <th>Peso</th>
+                            <th>Unidade</th>
+                            <th>Preço</th>
+                            <th>Validade</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($produtos)): ?>
                             <tr>
-                                <td colspan="7" class="text-center text-muted">Nenhum produto cadastrado no momento.</td>
+                                <td colspan="7" class="text-center">Nenhum produto encontrado.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($produtos as $produto): 
-                                // Simulação de estoque e status para fins de layout
-                                $estoque_simulado = rand(5, 150); // Valor aleatório
-                                $is_low_stock = $estoque_simulado < 15;
-                                $status_badge = $is_low_stock ? '<span class="badge bg-danger">Baixo Estoque</span>' : '<span class="badge bg-success">Em Estoque</span>';
-                                $row_class = $is_low_stock ? 'low-stock-row' : '';
-                            ?>
-                                <tr class="<?= $row_class ?>">
-                                    <td><?= htmlspecialchars($produto['id']) ?></td>
-                                    <td><?= htmlspecialchars($produto['produto']) ?></td>
-                                    <td><?= htmlspecialchars($produto['cor']) ?> / <?= htmlspecialchars($produto['textura']) ?></td>
-                                    <td><?= htmlspecialchars($produto['peso_litro']) ?></td>
-                                    <td class="stock-status-cell <?= $is_low_stock ? 'low-stock' : '' ?>"><?= $estoque_simulado ?></td>
-                                    <td><?= $status_badge ?></td>
+                            <?php foreach ($produtos as $produto): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($produto['idcadastro_produto']) ?></td>
+                                    <td><?= htmlspecialchars($produto['nome_produto']) ?></td>
+                                    <td><?= htmlspecialchars($produto['peso_produto']) ?></td>
+                                    <td><?= htmlspecialchars($produto['unidade_medida']) ?></td>
+                                    <td>R$ <?= htmlspecialchars($produto['preco_unitario']) ?></td>
+                                    <td><?= date('d/m/Y', strtotime($produto['data_validade'])) ?></td>
                                     <td>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Ações
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="editar_produto.php?id=<?= $produto['id'] ?>">Editar</a></li>
-                                                <li><a class="dropdown-item" href="../entradaSaida/index.php?codigo=<?= $produto['id'] ?>">Movimentar Estoque</a></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item text-danger" href="deletar_produto.php?id=<?= $produto['id'] ?>">Excluir</a></li>
-                                            </ul>
-                                        </div>
+                                        <a href="editar_produto.php?id=<?= $produto['idcadastro_produto'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+                                        <a href="deletar_produto.php?id=<?= $produto['idcadastro_produto'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este produto?');"><i class="bi bi-trash"></i></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
                 </table>
-                
             </section>
         </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-YIeQ4o8qX1n7wA1z32X4gVjKkR4W3eE4p9z0P1r2v5u7L6gP8z9C3b2D9b4c5D6" crossorigin="anonymous"></script>
 
-<script>
+    <script>
         // 1. Seleciona os elementos do HTML
         const logoutBtn = document.getElementById('logoutBtn');
-        const userGreetingElement = document.getElementById('userGreeting');
 
-        // 2. DEFINE a função (Cria a receita)
-        function loadUserName() {
-            const userName = localStorage.getItem('userName');
-            
-            if (userName) {
-                userGreetingElement.textContent = `olá ${userName}`;
-            } 
-            // OBS: Tirei o 'else' com redirecionamento para parar de recarregar a página sozinha
-        }
-        
-        // 3. EXECUTA a função
-        loadUserName(); 
-
-        // 4. Configura o botão de "Sair/Voltar"
+        // 2. Configura o botão de "Sair/Voltar"
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                // Certifique-se que esse arquivo '../tabela.php' existe mesmo nesse local
                 window.location.href = '../pagina_login/index.php'; 
             });
         }

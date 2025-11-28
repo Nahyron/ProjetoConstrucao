@@ -1,6 +1,51 @@
 <?php
     session_start();
     require_once("../conexao/conexao.php");
+
+    // Processar Entrada
+    if (isset($_POST['btn_entrada_submit'])) {
+        $id_produto = $_POST['codigo_entrada'];
+        $qtd = $_POST['quantidade_entrada'];
+        $nf = $_POST['nota_fiscal'];
+        $data = date('Y-m-d');
+        
+        // Busca nome do produto para redundância
+        $sql_prod = "SELECT nome_produto FROM cadastro_produto WHERE idcadastro_produto = '$id_produto'";
+        $res_prod = mysqli_query($conn, $sql_prod);
+        $nome_produto = ($res_prod && mysqli_num_rows($res_prod) > 0) ? mysqli_fetch_assoc($res_prod)['nome_produto'] : 'Desconhecido';
+
+        $sql = "INSERT INTO entrada_produto (fk_material, quantidade, data_saida, nome_produto, nota_fiscal) 
+                VALUES ('$id_produto', '$qtd', '$data', '$nome_produto', '$nf')";
+        
+        if (mysqli_query($conn, $sql)) {
+            echo "<script>alert('Entrada registrada com sucesso!');</script>";
+        } else {
+            echo "<script>alert('Erro ao registrar entrada: " . mysqli_error($conn) . "');</script>";
+        }
+    }
+
+    // Processar Saída
+    if (isset($_POST['btn_saida_submit'])) {
+        $id_produto = $_POST['codigo_saida'];
+        $qtd = $_POST['quantidade_saida'];
+        $destino = $_POST['destino_saida'];
+        $data = date('Y-m-d');
+        $id_usuario = $_SESSION['id_usuario'] ?? 1; // Fallback para 1 se não houver sessão
+
+        // Busca nome do produto
+        $sql_prod = "SELECT nome_produto FROM cadastro_produto WHERE idcadastro_produto = '$id_produto'";
+        $res_prod = mysqli_query($conn, $sql_prod);
+        $nome_produto = ($res_prod && mysqli_num_rows($res_prod) > 0) ? mysqli_fetch_assoc($res_prod)['nome_produto'] : 'Desconhecido';
+
+        $sql = "INSERT INTO saida_produto (fk_material, fk_usuario, quantidade_saida, data_saida, nome_produto, destino_saida) 
+                VALUES ('$id_produto', '$id_usuario', '$qtd', '$data', '$nome_produto', '$destino')";
+        
+        if (mysqli_query($conn, $sql)) {
+            echo "<script>alert('Saída registrada com sucesso!');</script>";
+        } else {
+            echo "<script>alert('Erro ao registrar saída: " . mysqli_error($conn) . "');</script>";
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +86,7 @@
              margin-bottom: 5px;
              color: #ccc;
              font-weight: bold;
-        }
+         }
         .form-box input[type="text"],
         .form-box input[type="number"] {
             width: 100%;
@@ -75,104 +120,144 @@
         #btn-saida:hover {
             background-color: #da190b;
         }
+
+        /* Garante que o header alinhe as coisas para a direita */
+        .user-area {
+            display: flex;
+            flex-direction: row; /* Alinha lado a lado */
+            align-items: center;  /* Centraliza verticalmente */
+            justify-content: flex-end;
+            gap: 15px; /* Espaço entre os elementos */
+        }
+
+        /* Linha superior (Olá usuário + Porta de sair) */
+        .user-top-row {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espaço entre o nome e a porta */
+            font-size: 1.2rem;
+        }
+
+        /* Estilo do novo botão Cinza */
+        .btn-cadastro-usuario {
+            background-color: #e0e0e0; /* Cinza claro */
+            color: #333;
+            text-decoration: none;
+            padding: 5px 15px;
+            border-radius: 20px; /* Borda redonda estilo "Pílula" */
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Espaço entre texto e ícone */
+            transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-cadastro-usuario:hover {
+            background-color: #c0c0c0; /* Cinza mais escuro ao passar mouse */
+            color: #000;
+        }
+        
+        /* Ajuste do ícone dentro do botão */
+        .btn-cadastro-usuario i {
+            font-size: 1.2rem;
+        }
     </style>
-</head> 
- 
+</head>
 <body>
-    
     <div>
         <header class="header">
             <div class="logo-area">
                 <div class="dashboard-logo">
-                    <img src="../imagens/logo_casa.png" alt="Logo Constru Casa">
+                    <a href="../paginaInicial/index.php">
+                        <img src="../imagens/logo_casa.png" alt="Logo Constru Casa">
+                    </a>
                 </div>
                 <span class="company-name">Constru Casa</span>
             </div>
+            
             <div class="user-area">
-                <span class="user-greeting" id="userGreeting">olá usuário</span>
-               <i class="bi bi-door-open-fill" id="logoutBtn"></i> 
+                
+                <a href="../pagina_cadastro/" class="btn-cadastro-usuario">
+                    Cadastro usuário 
+                    <i class="bi bi-person-circle"></i>
+                </a>
+
+                <div class="user-top-row">
+                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION['nome_usuario']; ?></span>
+                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor:pointer;" title="Sair do sistema"></i> 
+                </div>
             </div>
         </header>
 
         <main class="main-content">
             <nav class="sidebar">
                 <ul>
-                   <li class="menu-item">
-                        <a href="../paginainicial/index.php"><i class=" bi bi-house-door"></i> Pagina Inicial</a>
+                    <li class="menu-item">
+                        <a href="../paginaInicial/index.php"><i class="bi bi-house-door"></i> Voltar ao Início</a>
                     </li>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/cadastroProduto/"><i class="bi bi-tools"></i> Cadastro de produtos</a>
+                        <a href="../cadastroProduto/"><i class="bi bi-tools"></i> Cadastro de produtos</a>
                     </li>
                     <li class="menu-item">
-                        <a href="http://localhost/aula_PHP/ProjetoConstrucao/gestaoEstoque/"><i class="bi bi-cart-plus"></i> gestão de estoque</a>
+                        <a href="../cadastroFornecedor/"><i class="bi bi-truck"></i> Cadastro de fornecedores</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="./index.php"><i class="bi bi-arrow-left-right"></i> Entrada e Saída</a>
                     </li>
                 </ul>
             </nav>
 
             <section class="content-area">
-                <h1 style="color: white; margin-bottom: 20px;">Gestão de Movimentação de Estoque</h1>
+                <h1 style="color: white; margin-bottom: 20px;">Registro de Entrada e Saída</h1>
                 
                 <div class="forms-container">
-                    
+                    <!-- Formulário de Entrada -->
                     <div class="form-box">
-                        <h3>Entrada de Produtos</h3>
-                        <form method="post" action=""> 
-                            <label for="codigo_entrada">Código/Referência do Produto:</label>
-                            <input type="text" id="codigo_entrada" name="codigo_entrada" required>
+                        <h3>Entrada de Produto</h3>
+                        <form method="POST" action="">
+                            <label>Código do Produto</label>
+                            <input type="number" name="codigo_entrada" required>
                             
-                            <label for="quantidade_entrada">Quantidade Recebida:</label>
-                            <input type="number" id="quantidade_entrada" name="quantidade_entrada" min="1" required>
+                            <label>Quantidade</label>
+                            <input type="number" name="quantidade_entrada" required>
                             
-                            <label for="nota_fiscal">Nota Fiscal (Opcional):</label>
-                            <input type="text" id="nota_fiscal" name="nota_fiscal">
+                            <label>Nota Fiscal</label>
+                            <input type="text" name="nota_fiscal" required>
                             
                             <button type="submit" name="btn_entrada_submit" id="btn-entrada">Registrar Entrada</button>
                         </form>
                     </div>
 
+                    <!-- Formulário de Saída -->
                     <div class="form-box">
-                        <h3>Saída de Produtos</h3>
-                         <form method="post" action=""> 
-                            <label for="codigo_saida">Código/Referência do Produto:</label>
-                            <input type="text" id="codigo_saida" name="codigo_saida" required>
+                        <h3>Saída de Produto</h3>
+                        <form method="POST" action="">
+                            <label>Código do Produto</label>
+                            <input type="number" name="codigo_saida" required>
                             
-                            <label for="quantidade_saida">Quantidade Vendida/Utilizada:</label>
-                            <input type="number" id="quantidade_saida" name="quantidade_saida" min="1" required>
+                            <label>Quantidade</label>
+                            <input type="number" name="quantidade_saida" required>
                             
-                            <label for="destino_saida">Destino/Cliente (Opcional):</label>
-                            <input type="text" id="destino_saida" name="destino_saida">
+                            <label>Destino</label>
+                            <input type="text" name="destino_saida" required>
                             
                             <button type="submit" name="btn_saida_submit" id="btn-saida">Registrar Saída</button>
                         </form>
                     </div>
                 </div>
-
             </section>
         </main>
     </div>
 
-<script>
+    <script>
         // 1. Seleciona os elementos do HTML
         const logoutBtn = document.getElementById('logoutBtn');
-        const userGreetingElement = document.getElementById('userGreeting');
 
-        // 2. DEFINE a função (Cria a receita)
-        function loadUserName() {
-            const userName = localStorage.getItem('userName');
-            
-            if (userName) {
-                userGreetingElement.textContent = `olá ${userName}`;
-            } 
-            // OBS: Tirei o 'else' com redirecionamento para parar de recarregar a página sozinha
-        }
-        
-        // 3. EXECUTA a função
-        loadUserName(); 
-
-        // 4. Configura o botão de "Sair/Voltar"
+        // 2. Configura o botão de "Sair/Voltar"
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                // Certifique-se que esse arquivo '../tabela.php' existe mesmo nesse local
                 window.location.href = '../pagina_login/index.php'; 
             });
         }
