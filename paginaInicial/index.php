@@ -88,7 +88,12 @@ require_once("../conexao/conexao.php");
                 </a>
 
                 <div class="user-top-row">
-                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION["nome_usuario"]; ?></span>
+                    <span class="user-greeting" id="userGreeting">Olá, 
+                        <?php 
+                            // Verifica se a chave existe na sessão para evitar o Warning
+                            echo isset($_SESSION["nome_usuario"]) ? $_SESSION["nome_usuario"] : 'Visitante';
+                        ?>
+                    </span>
                     <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor: pointer;" title="Sair"></i>
                     <a href="../Tabelas/tabela.php" style="text-decoration: none; color: inherit; margin-left: 10px; display: flex; align-items: center; gap: 5px;">
                         <i class="bi bi-table"></i> Ir para Área de Tabelas
