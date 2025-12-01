@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'saep_db.sql'; // Nome correto do banco
+$dbname = 'saep_db3'; // Nome correto do banco
 $username = 'root';
 $password = ''; // ou sua senha
 

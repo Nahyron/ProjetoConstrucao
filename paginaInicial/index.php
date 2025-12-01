@@ -1,10 +1,11 @@
 <?php
-    session_start();
-    require_once("../conexao/conexao.php");
+session_start();
+require_once("../conexao/conexao.php");
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,49 +17,58 @@
         /* Garante que o header alinhe as coisas para a direita */
         .user-area {
             display: flex;
-            flex-direction: row; /* Alinha lado a lado */
-            align-items: center;  /* Centraliza verticalmente */
+            flex-direction: row;
+            /* Alinha lado a lado */
+            align-items: center;
+            /* Centraliza verticalmente */
             justify-content: flex-end;
-            gap: 15px; /* Espaço entre os elementos */
+            gap: 15px;
+            /* Espaço entre os elementos */
         }
 
         /* Linha superior (Olá usuário + Porta de sair) */
         .user-top-row {
             display: flex;
             align-items: center;
-            gap: 10px; /* Espaço entre o nome e a porta */
+            gap: 10px;
+            /* Espaço entre o nome e a porta */
             font-size: 1.2rem;
         }
 
         /* Estilo do novo botão Cinza */
         .btn-cadastro-usuario {
-            background-color: #e0e0e0; /* Cinza claro */
+            background-color: #e0e0e0;
+            /* Cinza claro */
             color: #333;
             text-decoration: none;
             padding: 5px 15px;
-            border-radius: 20px; /* Borda redonda estilo "Pílula" */
+            border-radius: 20px;
+            /* Borda redonda estilo "Pílula" */
             font-size: 0.9rem;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px; /* Espaço entre texto e ícone */
+            gap: 8px;
+            /* Espaço entre texto e ícone */
             transition: background 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .btn-cadastro-usuario:hover {
-            background-color: #c0c0c0; /* Cinza mais escuro ao passar mouse */
+            background-color: #c0c0c0;
+            /* Cinza mais escuro ao passar mouse */
             color: #000;
         }
-        
+
         /* Ajuste do ícone dentro do botão */
         .btn-cadastro-usuario i {
             font-size: 1.2rem;
         }
     </style>
 </head>
+
 <body>
-    
+
     <div>
         <header class="header">
             <div class="logo-area">
@@ -69,17 +79,17 @@
                 </div>
                 <span class="company-name">Constru Casa</span>
             </div>
-            
+
             <div class="user-area">
-                
+
                 <a href="../pagina_cadastro/" class="btn-cadastro-usuario">
-                    Cadastro usuário 
+                    Cadastro usuário
                     <i class="bi bi-person-circle"></i>
                 </a>
 
                 <div class="user-top-row">
-                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION["nome_usuario"];?></span>
-                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor: pointer;" title="Sair"></i> 
+                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION["nome_usuario"]; ?></span>
+                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor: pointer;" title="Sair"></i>
                     <a href="../Tabelas/tabela.php" style="text-decoration: none; color: inherit; margin-left: 10px; display: flex; align-items: center; gap: 5px;">
                         <i class="bi bi-table"></i> Ir para Área de Tabelas
                     </a>
@@ -108,7 +118,7 @@
             <section class="content-area">
                 <h1>Bem-vindo ao Sistema Constru Casa</h1>
                 <p>Selecione uma opção no menu lateral para começar.</p>
-                
+
                 <div style="display: flex; gap: 20px; margin-top: 30px;">
                     <div class="card text-bg-dark mb-3" style="max-width: 18rem;">
                         <div class="card-header">Produtos</div>
@@ -122,7 +132,7 @@
                         <div class="card-header">Fornecedores</div>
                         <div class="card-body">
                             <h5 class="card-title">Gerenciar Fornecedores</h5>
-                            <p class="card-text">Cadastre e visualize fornecedores.</p>
+                            <p class="card-text">Cadastre fornecedores.</p>
                             <a href="../cadastroFornecedor/" class="btn btn-light">Acessar</a>
                         </div>
                     </div>
@@ -134,21 +144,31 @@
                             <a href="../entradaSaida/" class="btn btn-light">Acessar</a>
                         </div>
                     </div>
+
+                    <div class="card text-bg-dark mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Estoque</div>
+                        <div class="card-body">
+                            <h5 class="card-title">Alerta de Estoque</h5>
+                            <p class="card-text">Visualize produtos com estoque baixo.</p>
+                            <a href="../alertaEstoque/" class="btn btn-light">Acessar</a>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
-    </div>  
+    </div>
 
- <script>
+    <script>
         // 1. Seleciona os elementos do HTML
         const logoutBtn = document.getElementById('logoutBtn');
 
         // 4. Configura o botão de "Sair/Voltar"
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                window.location.href = '../pagina_login/index.php'; 
+                window.location.href = '../pagina_login/index.php';
             });
         }
     </script>
 </body>
+
 </html>

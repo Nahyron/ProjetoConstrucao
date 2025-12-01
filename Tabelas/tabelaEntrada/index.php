@@ -1,20 +1,34 @@
 <?php
-    session_start();
-    require_once(__DIR__ . "/../../conexao/conexao.php");
+session_start();
+require_once("../../conexao/conexao.php");
+
+// --- LÓGICA DE PESQUISA ADICIONADA ---
+$filtro_sql = ""; // Começa vazio
+$termo_busca = ""; // Variável para manter o texto
+
+if (isset($_GET['busca']) && !empty($_GET['busca'])) {
+    $termo_busca = mysqli_real_escape_string($conn, $_GET['busca']);
+
+    // Pesquisa por Nome, CNPJ ou Local
+    $filtro_sql = "WHERE nome_fornecedor LIKE '%$termo_busca%' 
+                   OR cnpj_empresa LIKE '%$termo_busca%' 
+                   OR local_empresa LIKE '%$termo_busca%'";
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Constru Casa - Tabela de Entrada e Saída</title>
-    
-    <link rel="stylesheet" href="./css/style.css"> 
-    
+    <title>Constru Casa - Tabela de Fornecedores</title>
+
+    <link rel="stylesheet" href="../tabelaCadastro/css/style.css">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <style>
         /* Estilos específicos para a área de Gestão de Estoque (Replicado) */
         .search-area {
@@ -23,6 +37,7 @@
             margin-bottom: 25px;
             align-items: center;
         }
+
         .search-area input {
             padding: 8px 12px;
             border-radius: 4px;
@@ -31,6 +46,7 @@
             color: white;
             width: 300px;
         }
+
         .search-area button {
             padding: 8px 15px;
             border: none;
@@ -42,66 +58,77 @@
         }
 
         /* Tabela de Estoque */
-        .stock-table th, .stock-table td {
+        .stock-table th,
+        .stock-table td {
             text-align: left;
             vertical-align: middle;
         }
+
         .stock-table th {
             background-color: #555;
             color: #d8c8c8;
         }
+
         .stock-table td {
-            background-color: #3f3f3f; 
+            background-color: #3f3f3f;
             color: white;
         }
-        
+
         /* Garante que o header alinhe as coisas para a direita */
         .user-area {
             display: flex;
-            flex-direction: row; /* Alinha lado a lado */
-            align-items: center;  /* Centraliza verticalmente */
+            flex-direction: row;
+            /* Alinha lado a lado */
+            align-items: center;
+            /* Centraliza verticalmente */
             justify-content: flex-end;
-            gap: 15px; /* Espaço entre os elementos */
+            gap: 15px;
+            /* Espaço entre os elementos */
         }
 
         /* Linha superior (Olá usuário + Porta de sair) */
         .user-top-row {
             display: flex;
             align-items: center;
-            gap: 10px; /* Espaço entre o nome e a porta */
+            gap: 10px;
+            /* Espaço entre o nome e a porta */
             font-size: 1.2rem;
         }
 
         /* Estilo do novo botão Cinza */
         .btn-cadastro-usuario {
-            background-color: #e0e0e0; /* Cinza claro */
+            background-color: #e0e0e0;
+            /* Cinza claro */
             color: #333;
             text-decoration: none;
             padding: 5px 15px;
-            border-radius: 20px; /* Borda redonda estilo "Pílula" */
+            border-radius: 20px;
+            /* Borda redonda estilo "Pílula" */
             font-size: 0.9rem;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px; /* Espaço entre texto e ícone */
+            gap: 8px;
+            /* Espaço entre texto e ícone */
             transition: background 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .btn-cadastro-usuario:hover {
-            background-color: #c0c0c0; /* Cinza mais escuro ao passar mouse */
+            background-color: #c0c0c0;
+            /* Cinza mais escuro ao passar mouse */
             color: #000;
         }
-        
+
         /* Ajuste do ícone dentro do botão */
         .btn-cadastro-usuario i {
             font-size: 1.2rem;
         }
     </style>
-</head> 
- 
+</head>
+
 <body>
-    
+
     <div>
         <header class="header">
             <div class="logo-area">
@@ -112,19 +139,16 @@
                 </div>
                 <span class="company-name">Constru Casa</span>
             </div>
-            
+
             <div class="user-area">
-                
                 <a href="../../pagina_cadastro/" class="btn-cadastro-usuario">
-                    Cadastro usuário 
+                    Cadastro usuário
                     <i class="bi bi-person-circle"></i>
                 </a>
-
                 <div class="user-top-row">
-                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION['nome_usuario'] ?? 'Usuário'; ?></span>
-                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor:pointer;" title="Sair do sistema"></i> 
+                    <span class="user-greeting" id="userGreeting">Olá, <?php echo $_SESSION['nome_usuario']; ?></span>
+                    <i class="bi bi-door-open-fill" id="logoutBtn" style="cursor:pointer;" title="Sair do sistema"></i>
                 </div>
-
             </div>
         </header>
 
@@ -140,9 +164,14 @@
                     <li class="menu-item">
                         <a href="../../Tabelas/tabelaFornecedor/"><i class="bi bi-truck"></i> Tabela de Fornecedores</a>
                     </li>
+
                     <li class="menu-item">
-                        <a href="../../Tabelas/tabelaEntradaSaida/"><i class="bi bi-boxes"></i> Tabela de Entrada e Saida</a>
+                        <a href="../../Tabelas/tabelaEntrada/"><i class="bi bi-boxes"></i> Tabela de Entrada</a>
                     </li>
+                    <li class="menu-item">
+                        <a href="../../Tabelas/tabelaSaidas/"><i class="bi bi-boxes"></i> Tabela de Saida</a>
+                    </li>
+
                     <li class="menu-item">
                         <a href="../../gestaoEstoque/"><i class="bi bi-cart-plus"></i> Gestão de estoque</a>
                     </li>
@@ -150,68 +179,63 @@
             </nav>
 
             <section class="content-area">
-                <h1 style="color: white; margin-bottom: 20px;">Relatório de Entrada e Saída</h1>
-                
-                <div class="search-area">
-                    <input type="text" placeholder="Pesquisar registro...">
-                    <button><i class="bi bi-search"></i> Pesquisar</button>
-                </div>
+                <h1 style="color: white; margin-bottom: 20px;">Relatório de Fornecedores</h1>
+
+                <form method="GET" action="" class="search-area">
+                    <input type="text" name="busca" placeholder="Pesquisar (Nome, CNPJ, Local)..." value="<?php echo $termo_busca; ?>">
+
+                    <button type="submit"><i class="bi bi-search"></i> Pesquisar</button>
+
+                    <?php if (!empty($termo_busca)) { ?>
+                        <a href="index.php" style="padding: 8px 15px; border-radius: 4px; text-decoration: none; background-color: #6c757d; color: white;">Limpar</a>
+                    <?php } ?>
+                </form>
 
                 <table class="table table-hover stock-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Produto</th>
-                            <th>Tipo</th>
-                            <th>Quantidade</th>
-                            <th>Data</th>
-                            <th>Nota Fiscal / Destino</th>
+                            <th>Nome</th>
+                            <th>Destino</th>
+                            <th>CNPJ</th>
+                            <th>Local</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        // Busca Entradas
-                        $sql_entrada = "SELECT 'Entrada' as tipo, identrada_produto as id, nome_produto, quantidade as qtd, data_saida as data, nota_fiscal as obs FROM entrada_produto";
-                        // Busca Saídas
-                        $sql_saida = "SELECT 'Saída' as tipo, idsaida_produto as id, nome_produto, quantidade as qtd, data_saida as data, nota_fiscal as obs FROM saida_produto";
-                        
-                        // Une as consultas
-                        $sql = "($sql_entrada) UNION ($sql_saida) ORDER BY data DESC";
-                        
+                        // MUDANÇA AQUI: Inserido o filtro SQL
+                        $sql = "SELECT * FROM fornecedor $filtro_sql";
                         $result = mysqli_query($conn, $sql);
-                        
+
                         if ($result && mysqli_num_rows($result) > 0) {
-                            while($row = mysqli_fetch_assoc($result)) {
+                            while ($row = mysqli_fetch_assoc($result)) {
                                 echo "<tr>";
-                                echo "<td>" . $row['id'] . "</td>";
-                                echo "<td>" . $row['nome_produto'] . "</td>";
-                                echo "<td>" . $row['tipo'] . "</td>";
-                                echo "<td>" . $row['qtd'] . "</td>";
-                                echo "<td>" . date('d/m/Y', strtotime($row['data'])) . "</td>";
-                                echo "<td>" . $row['obs'] . "</td>";
+                                echo "<td>" . $row['idfornecedor'] . "</td>";
+                                echo "<td>" . $row['nome_fornecedor'] . "</td>";
+                                echo "<td>" . $row['destino'] . "</td>";
+                                echo "<td>" . $row['cnpj_empresa'] . "</td>";
+                                echo "<td>" . $row['local_empresa'] . "</td>";
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='6' class='text-center text-muted'>Nenhum registro encontrado.</td></tr>";
+                            echo "<tr><td colspan='5' class='text-center text-muted'>Nenhum fornecedor encontrado.</td></tr>";
                         }
                         ?>
                     </tbody>
                 </table>
-                
+
             </section>
         </main>
     </div>
 
-   <script>
-        // 1. Seleciona os elementos do HTML
+    <script>
         const logoutBtn = document.getElementById('logoutBtn');
-
-        // 2. Configura o botão de "Sair/Voltar"
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                window.location.href = '../../pagina_login/index.php'; 
+                window.location.href = '../../pagina_login/index.php';
             });
         }
     </script>
 </body>
+
 </html>
