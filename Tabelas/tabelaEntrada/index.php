@@ -10,9 +10,9 @@ if (isset($_GET['busca']) && !empty($_GET['busca'])) {
     $termo_busca = mysqli_real_escape_string($conn, $_GET['busca']);
 
     // Pesquisa por Nome, CNPJ ou Local
-    $filtro_sql = "WHERE nome_fornecedor LIKE '%$termo_busca%' 
-                   OR cnpj_empresa LIKE '%$termo_busca%' 
-                   OR local_empresa LIKE '%$termo_busca%'";
+    $filtro_sql = "WHERE identrada_produto LIKE '%$termo_busca%' 
+                   OR nome_produto LIKE '%$termo_busca%' 
+                   OR nota_fiscal LIKE '%$termo_busca%'";
 }
 ?>
 
@@ -179,7 +179,7 @@ if (isset($_GET['busca']) && !empty($_GET['busca'])) {
             </nav>
 
             <section class="content-area">
-                <h1 style="color: white; margin-bottom: 20px;">Relatório de Fornecedores</h1>
+                <h1 style="color: white; margin-bottom: 20px;">Relatório de Entrada</h1>
 
                 <form method="GET" action="" class="search-area">
                     <input type="text" name="busca" placeholder="Pesquisar (Nome, CNPJ, Local)..." value="<?php echo $termo_busca; ?>">
@@ -196,25 +196,25 @@ if (isset($_GET['busca']) && !empty($_GET['busca'])) {
                         <tr>
                             <th>ID</th>
                             <th>Nome</th>
-                            <th>Destino</th>
-                            <th>CNPJ</th>
-                            <th>Local</th>
+                            <th>Nota Fiscal</th>
+                            <th>Data de Saida</th>
+                            <th>Quantidade</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         // MUDANÇA AQUI: Inserido o filtro SQL
-                        $sql = "SELECT * FROM fornecedor $filtro_sql";
+                        $sql = "SELECT * FROM entrada_produto $filtro_sql";
                         $result = mysqli_query($conn, $sql);
 
                         if ($result && mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
                                 echo "<tr>";
-                                echo "<td>" . $row['idfornecedor'] . "</td>";
-                                echo "<td>" . $row['nome_fornecedor'] . "</td>";
-                                echo "<td>" . $row['destino'] . "</td>";
-                                echo "<td>" . $row['cnpj_empresa'] . "</td>";
-                                echo "<td>" . $row['local_empresa'] . "</td>";
+                                echo "<td>" . $row['identrada_produto'] . "</td>";
+                                echo "<td>" . $row['nome_produto'] . "</td>";
+                                echo "<td>" . $row['nota_fiscal'] . "</td>";
+                                echo "<td>" . $row['data_saida'] . "</td>";
+                                echo "<td>" . $row['quantidade'] . "</td>";
                                 echo "</tr>";
                             }
                         } else {
